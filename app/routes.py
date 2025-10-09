@@ -1,16 +1,16 @@
 from flask import Blueprint, request, jsonify
 from .models import Expense, db
 
-routes = Blueprint("routes", __name__)
+bp = Blueprint("routes", __name__)
 
 # Get all expenses
-@routes.route("/expenses", methods=["GET"])
+@bp.route("/expenses", methods=["GET"])
 def get_expenses():
     expenses = Expense.query.all()
     return jsonify([expense.to_dict() for expense in expenses]), 200
 
 # Create a new expense
-@routes.route("/expenses", methods=["POST"])
+@bp.route("/expenses", methods=["POST"])
 def create_expense():
     data = request.get_json()
     if not data:
@@ -27,7 +27,7 @@ def create_expense():
     return jsonify(expense.to_dict()), 201
 
 # Update an expense
-@routes.route("/expenses/<int:id>", methods=["PUT"])
+@bp.route("/expenses/<int:id>", methods=["PUT"])
 def update_expense(id):
     data = request.get_json()
     expense = Expense.query.get_or_404(id)
@@ -41,7 +41,7 @@ def update_expense(id):
     return jsonify(expense.to_dict()), 200
 
 # Delete an expense
-@routes.route("/expenses/<int:id>", methods=["DELETE"])
+@bp.route("/expenses/<int:id>", methods=["DELETE"])
 def delete_expense(id):
     expense = Expense.query.get_or_404(id)
     db.session.delete(expense)
