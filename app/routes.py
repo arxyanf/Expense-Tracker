@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import Expense, db
+from .models import Expense, db
 
 routes = Blueprint("routes", __name__)
 
