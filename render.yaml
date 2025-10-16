@@ -3,5 +3,5 @@ services:
     name: expense-tracker
     env: docker
     plan: free
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./Dockerfile
     autoDeploy: true
