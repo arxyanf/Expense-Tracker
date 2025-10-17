@@ -1,6 +1,39 @@
-node_modules
-build
-venv
-__pycache__
+# Ignore virtual environments
+venv/
+__pycache__/
 *.pyc
-.git
+*.pyo
+*.pyd
+
+# Ignore Python build and cache directories
+*.egg-info/
+build/
+dist/
+
+# Ignore node modules and logs
+frontend/node_modules/
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Ignore local databases
+*.db
+instance/
+
+# Ignore git and Docker stuff
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+
+# Ignore OS junk
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+
+# Ignore environment files
+.env

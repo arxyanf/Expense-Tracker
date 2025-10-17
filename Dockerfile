@@ -1,36 +1,27 @@
-# ---------- FRONTEND BUILD ----------
+# ---------- Frontend build stage ----------
 FROM node:18 AS frontend-builder
-WORKDIR /frontend
+WORKDIR /app
 
-# Copy only package.json and package-lock.json for npm install
-COPY frontend/package*.json ./
-RUN npm install
+# Copy package files from your local frontend folder
+COPY ./frontend/package*.json ./frontend/
+RUN cd frontend && npm install
 
-# Copy all frontend files and build React app
-COPY ./frontend/ ./
-RUN npm run build
+# Copy the rest of the frontend files and build
+COPY ./frontend ./frontend
+RUN cd frontend && npm run build
 
-# ---------- BACKEND ----------
-FROM python:3.12-slim
-WORKDIR /backend
 
-# Install backend dependencies
+# ---------- Backend stage ----------
+FROM python:3.10-slim
+WORKDIR /app
+
+# Copy and install backend dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-# Copy backend code
-COPY backend/ .
+# Copy backend and frontend build output
+COPY ./backend ./backend
+COPY --from=frontend-builder /app/frontend/build ./frontend/build
 
-# Copy frontend build into backend static folder
-COPY --from=frontend-builder /frontend/build ./frontend/build
-
-# Environment variables
-ENV FLASK_APP=app:create_app
-ENV FLASK_ENV=production
-ENV PORT=5000
-
-# Expose port
-EXPOSE 5000
-
-# Run backend with gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:create_app()"]
+WORKDIR /app/backend
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
