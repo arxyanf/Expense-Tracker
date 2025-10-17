@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+instance/
+*.db
+
+# Node / React
+frontend/node_modules/
+frontend/build/
+
+# Docker
+*.log
+*.pid
+
+# System files
+.DS_Store
