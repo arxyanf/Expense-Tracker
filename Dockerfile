@@ -16,7 +16,7 @@ RUN npm run build
 
 # ---------- BACKEND ----------
 FROM python:3.12-slim
-WORKDIR /app/backend
+WORKDIR /backend
 
 # Copy backend requirements
 COPY requirements.txt .
