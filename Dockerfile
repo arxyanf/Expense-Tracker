@@ -1,27 +1,45 @@
-# ---------- Frontend build stage ----------
+# ---------- FRONTEND BUILD ----------
 FROM node:18 AS frontend-builder
-WORKDIR /app
 
-# Copy package files from your local frontend folder
-COPY ./frontend/package*.json ./frontend/
-RUN cd frontend && npm install
+# Set working directory inside container
+WORKDIR /app/frontend
 
-# Copy the rest of the frontend files and build
-COPY ./frontend ./frontend
-RUN cd frontend && npm run build
+# Copy package files for npm install
+COPY ./frontend/package*.json ./
 
+# Install frontend dependencies
+RUN npm install
 
-# ---------- Backend stage ----------
-FROM python:3.10-slim
-WORKDIR /app
+# Copy frontend source code
+COPY ./frontend/ ./
 
-# Copy and install backend dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Build frontend
+RUN npm run build
 
-# Copy backend and frontend build output
-COPY ./backend ./backend
-COPY --from=frontend-builder /app/frontend/build ./frontend/build
+# ---------- BACKEND ----------
+FROM python:3.12-slim
 
 WORKDIR /app/backend
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
+
+# Copy backend dependencies
+COPY ./requirements.txt .
+
+# Install backend dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend source code
+COPY ./backend/ .
+
+# Copy frontend build into backend
+COPY --from=frontend-builder /app/frontend/build ./frontend/build
+
+# Set environment variables
+ENV FLASK_APP=app:create_app()
+ENV FLASK_ENV=production
+ENV PORT=5000
+
+# Expose port
+EXPOSE 5000
+
+# Run app with gunicorn using factory method
+CMD ["gunicorn", "--chdir", ".", "app:create_app()", "-b", "0.0.0.0:5000"]
