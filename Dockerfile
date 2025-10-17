@@ -1,6 +1,6 @@
 # ---------- FRONTEND BUILD ----------
 FROM node:18 AS frontend-builder
-WORKDIR /app/frontend
+WORKDIR /frontend
 
 # Copy only package.json and package-lock.json for npm install
 COPY frontend/package*.json ./
@@ -12,7 +12,7 @@ RUN npm run build
 
 # ---------- BACKEND ----------
 FROM python:3.12-slim
-WORKDIR /app/backend
+WORKDIR /backend
 
 # Install backend dependencies
 COPY requirements.txt .
@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 
 # Copy frontend build into backend static folder
-COPY --from=frontend-builder /app/frontend/build ./frontend/build
+COPY --from=frontend-builder /frontend/build ./frontend/build
 
 # Environment variables
 ENV FLASK_APP=app:create_app
